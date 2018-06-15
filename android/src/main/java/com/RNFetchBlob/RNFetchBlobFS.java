@@ -1,5 +1,6 @@
 package com.RNFetchBlob;
 
+import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -622,8 +623,14 @@ class RNFetchBlobFS {
             } catch (IOException e) {
                 callback.invoke(false, false);
             }
-        }
-        else {
+        } else if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_CONTENT)) {
+          try {
+              InputStream in = RNFetchBlob.RCTContext.getContentResolver().openInputStream(Uri.parse(path));
+              callback.invoke(true, false);
+          } catch (Exception e) {
+              callback.invoke(false, false);
+          }
+        } else {
             path = normalizePath(path);
             boolean exist = new File(path).exists();
             boolean isDir = new File(path).isDirectory();
@@ -634,7 +641,7 @@ class RNFetchBlobFS {
     /**
      * List content of folder
      * @param path Target folder
-     * @param callback  JS context callback
+     * @param promise  JS context promise
      */
     static void ls(String path, Promise promise) {
         try {
@@ -1051,6 +1058,8 @@ class RNFetchBlobFS {
     private static InputStream inputStreamFromPath(String path) throws IOException {
         if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_BUNDLE_ASSET)) {
             return RNFetchBlob.RCTContext.getAssets().open(path.replace(RNFetchBlobConst.FILE_PREFIX_BUNDLE_ASSET, ""));
+        } else if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_CONTENT)) {
+            return RNFetchBlob.RCTContext.getContentResolver().openInputStream(Uri.parse(path));
         }
         return new FileInputStream(new File(path));
     }
@@ -1068,8 +1077,9 @@ class RNFetchBlobFS {
                 return false;
             }
             return true;
-        }
-        else {
+        } else if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_CONTENT)) {
+            return true;
+        } else {
             return new File(path).exists();
         }
 

@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.content.ContentUris;
 import android.os.Environment;
 import android.content.ContentResolver;
+import android.text.TextUtils;
+
 import com.RNFetchBlob.RNFetchBlobUtils;
 import java.io.File;
 import java.io.InputStream;
@@ -31,6 +33,10 @@ public class PathResolver {
 
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
+                } else if ("raw".equalsIgnoreCase(type)) {
+                    return split[1];
+                } else if (type != null && !TextUtils.isEmpty(type)) {
+                    return "/storage/" + type + "/" + split[1];
                 }
 
                 // TODO handle non-primary volumes
@@ -39,6 +45,9 @@ public class PathResolver {
             else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
+                if (id.startsWith("raw:")) {
+                    return id.replaceFirst("raw:", "");
+                }
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
@@ -57,6 +66,8 @@ public class PathResolver {
                     contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                 } else if ("audio".equals(type)) {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                } else if ("raw".equalsIgnoreCase(type)) {
+                    return split[1];
                 }
 
                 final String selection = "_id=?";
