@@ -632,8 +632,8 @@ class RNFetchBlobFS {
           }
         } else {
             path = normalizePath(path);
-            boolean exist = new File(path).exists();
-            boolean isDir = new File(path).isDirectory();
+            boolean exist = path != null ? new File(path).exists() : false;
+            boolean isDir = path != null ? new File(path).isDirectory() : false;
             callback.invoke(exist, isDir);
         }
     }
