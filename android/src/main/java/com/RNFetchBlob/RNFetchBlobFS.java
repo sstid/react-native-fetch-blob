@@ -650,7 +650,12 @@ class RNFetchBlobFS {
         } else if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_CONTENT)) {
           try {
               InputStream in = RNFetchBlob.RCTContext.getContentResolver().openInputStream(Uri.parse(path));
-              callback.invoke(true, false);
+              if (in != null) {
+                  in.close();
+                  callback.invoke(true, false);
+              } else {
+                  callback.invoke(false, false);
+              }
           } catch (Exception e) {
               callback.invoke(false, false);
           }
