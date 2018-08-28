@@ -72,14 +72,15 @@ emitter.addListener("RNFetchBlobMessage", (e) => {
 // Show warning if native module not detected
 if(!RNFetchBlob || !RNFetchBlob.fetchBlobForm || !RNFetchBlob.fetchBlob) {
   console.warn(
-    'react-native-fetch-blob could not find valid native module.',
+    'rn-fetch-blob could not find valid native module.',
     'please make sure you have linked native modules using `rnpm link`,',
     'and restart RN packager or manually compile IOS/Android project.'
   )
 }
 
 function wrap(path:string):string {
-  return 'RNFetchBlob-file://' + path
+  const prefix = path.startsWith('content://') ? 'RNFetchBlob-content://' : 'RNFetchBlob-file://'
+  return prefix + path
 }
 
 /**

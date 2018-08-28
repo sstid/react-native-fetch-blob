@@ -1,5 +1,9 @@
 apply plugin: 'com.android.library'
 
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 repositories {
     mavenCentral()
 }
@@ -13,17 +17,12 @@ buildscript {
     }
 }
 
-def DEFAULT_COMPILE_SDK_VERSION             = 25
-def DEFAULT_BUILD_TOOLS_VERSION             = "25.0.3"
-def DEFAULT_TARGET_SDK_VERSION              = 25
-def DEFAULT_SUPPORT_LIB_VERSION             = "25.0.0"
-
 android {
-    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
-    buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
+    compileSdkVersion safeExtGet('compileSdkVersion', 26)
+    buildToolsVersion safeExtGet('buildToolsVersion', '26.0.3')
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
+        minSdkVersion safeExtGet('minSdkVersion', 16)
+        targetSdkVersion safeExtGet('targetSdkVersion', 26)
         versionCode 1
         versionName "1.0"
     }
@@ -38,7 +37,7 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    compile "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
     //compile 'com.squareup.okhttp3:okhttp:+'
     //{RNFetchBlob_PRE_0.28_DEPDENDENCY}
 }
