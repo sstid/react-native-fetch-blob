@@ -1107,7 +1107,17 @@ class RNFetchBlobFS {
             }
             return true;
         } else if (path.startsWith(RNFetchBlobConst.FILE_PREFIX_CONTENT)) {
-            return true;
+            try {
+                InputStream in = RNFetchBlob.RCTContext.getContentResolver().openInputStream(Uri.parse(path));
+                if (in != null) {
+                    in.close();
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                return false;
+            }
         } else {
             return new File(path).exists();
         }
