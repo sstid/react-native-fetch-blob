@@ -211,6 +211,9 @@ export default class Blob extends EventTarget {
     return this._isDerived || false
   }
 
+  set isDerived(value) {
+      this._isDerived = value;
+  }
   /**
    * Get file reference of the Blob object.
    * @nonstandard
